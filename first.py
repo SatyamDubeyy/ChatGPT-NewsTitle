@@ -2,23 +2,9 @@ from newspaper import Article
 from urllib.parse import urlparse
 from chat import generateTitles
 import os
+from desc import extract_desc
 url=input("Enter URL: ")
 title=""
-def bbcExt(url):
-    import requests
-    from bs4 import BeautifulSoup
-    r=requests.get(url)
-    soup=BeautifulSoup(r.text,"lxml")
-    main=soup.find("main")
-    allB=main.find_all("div",{"data-component" : "text-block"})
-    s=""
-    for B in allB:
-        s+="\n"
-        s+=B.getText()
-
-    f = open(PATHH+"\\desc.txt", "w")
-    f.write(s)
-    f.close()
 
 if not os.path.exists('text_files'):
     os.makedirs('text_files')
@@ -27,17 +13,15 @@ domain = urlparse(url).netloc
 article=Article(url)
 article.download()
 article.parse()
-f = open(PATHH+"\\title.txt", "w")
+f = open(PATHH+"\\orignal_title.txt", "w")
 f.write(url+"\n")
 title=article.title
 f.write(title)
 f.close()
-if(domain=="www.bbc.com"):
-    bbcExt(url)
-else:
-    f = open(PATHH+"\\desc.txt", "w")
-    f.write(article.text)
-    f.close()
+f = open(PATHH+"\\desc.txt", "w")
+desc=extract_desc(url)
+f.write(desc)
+f.close()
 n=0
 text_title_list=[]
 while(True):
